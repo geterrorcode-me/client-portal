@@ -7,7 +7,12 @@ services:
       dockerfile: Dockerfile
     container_name: nexus-backend
     restart: unless-stopped
-    # HAPUS BAGIAN ENVIRONMENT DI SINI, BIARKAN COOLIFY YANG MENGISI VIA UI
+    # Definisikan ulang di sini agar variabel dari UI diteruskan ke dalam kontainer
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - CORS_ORIGINS=${CORS_ORIGINS}
     volumes:
       - backend_data:/app/data
     expose:

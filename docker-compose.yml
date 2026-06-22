@@ -8,18 +8,14 @@ services:
     container_name: nexus-backend
     restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
+      - DATABASE_URL=sqlite:///./data/portal.db
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-false}
       - CORS_ORIGINS=${CORS_ORIGINS}
     volumes:
       - backend_data:/app/data
     ports:
-      - "8001:8000"  # Mengubah port luar VPS menjadi 8001
-    # Tetap gunakan port internal 8000 untuk healthcheck & label proxy
-    labels:
-      - "caddy_0=https://api.portal.mjasa.com"
-      - "caddy_0.reverse_proxy={{upstreams}} 8000"
+      - "8000:8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s
@@ -36,11 +32,7 @@ services:
     container_name: nexus-frontend
     restart: unless-stopped
     ports:
-      - "88:80"      # Mengubah port luar VPS menjadi 88
-    # Tetap gunakan port internal 80 untuk label proxy
-    labels:
-      - "caddy_0=https://portal.mjasa.com"
-      - "caddy_0.reverse_proxy={{upstreams}} 80"
+      - "80:80"
     depends_on:
       backend:
         condition: service_healthy

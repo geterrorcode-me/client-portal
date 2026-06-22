@@ -9,9 +9,9 @@ services:
     restart: unless-stopped
     environment:
       - DATABASE_URL=sqlite:///./data/portal.db
-      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
-      - DEBUG=${DEBUG:-false}
-      - CORS_ORIGINS=http://localhost,http://localhost:80,http://frontend:80
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=false
+      - CORS_ORIGINS=https://portal.mjasa.com,https://api.portal.mjasa.com
     volumes:
       - backend_data:/app/data
     expose:

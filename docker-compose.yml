@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: nexus-backend
     restart: unless-stopped
-    # Definisikan ulang di sini agar variabel dari UI diteruskan ke dalam kontainer
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -17,6 +16,10 @@ services:
       - backend_data:/app/data
     expose:
       - "8000"
+    # Menghapus try_files otomatis dengan mendefinisikan port 8000 secara manual ke proxy Caddy Coolify
+    labels:
+      - "caddy_0=https://api.portal.mjasa.com"
+      - "caddy_0.reverse_proxy={{upstreams}} 8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s
@@ -32,6 +35,10 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+    # Mengunci port 80 frontend untuk proxy Caddy Coolify
+    labels:
+      - "caddy_0=https://portal.mjasa.com"
+      - "caddy_0.reverse_proxy={{upstreams}} 80"
     depends_on:
       backend:
         condition: service_healthy

@@ -9,21 +9,27 @@ services:
     restart: unless-stopped
     environment:
       - DATABASE_URL=sqlite:///./data/portal.db
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=false
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-false}
+      # PENTING: Ubah CORS agar mencakup domain produksi Anda
       - CORS_ORIGINS=https://portal.mjasa.com,https://api.portal.mjasa.com
     volumes:
       - backend_data:/app/data
+    
+    # GANTI 'ports' DENGAN 'expose'
     expose:
-      - "8000"
+      - "8000" 
+    
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    networks:
-      - nexus-network
+    
+    # HAPUS BAGIAN NETWORKS MANUAL INI
+    # networks:
+    #   - nexus-network
 
   frontend:
     build:
@@ -31,24 +37,32 @@ services:
       dockerfile: Dockerfile
     container_name: nexus-frontend
     restart: unless-stopped
+    
+    # GANTI 'ports' DENGAN 'expose' JUGA
     expose:
       - "80"
+      
     depends_on:
       backend:
         condition: service_healthy
+        
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      # Pastikan endpoint /health ada di Nginx, atau ganti ke '/'
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"] 
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    networks:
-      - nexus-network
+    
+    # HAPUS BAGIAN NETWORKS MANUAL INI JUGA
+    # networks:
+    #   - nexus-network
 
 volumes:
   backend_data:
     driver: local
 
-networks:
-  nexus-network:
-    driver: bridge
+# HAPUS DEFINISI NETWORK GLOBAL
+# networks:
+#   nexus-network:
+#     driver: bridge

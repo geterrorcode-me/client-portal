@@ -14,8 +14,8 @@ services:
       - CORS_ORIGINS=http://localhost,http://localhost:80,http://frontend:80
     volumes:
       - backend_data:/app/data
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s

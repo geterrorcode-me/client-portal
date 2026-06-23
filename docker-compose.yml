@@ -17,7 +17,7 @@ services:
     ports:
       - "8001:8000"
     labels:
-      - "caddy_0=https://api.portal.mjasa.com"
+      - "caddy_0=https://portal.mjasa.com"
       - "caddy_0.reverse_proxy={{upstreams}} 8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
